@@ -59,3 +59,69 @@ else:
 #o2 = name2.count('o')
 #v2 = name2.count('v')
 #e2 = name2.count('e')
+
+
+# 🚨 Don't change the code below 👇
+print("Welcome to the Love Calculator!")
+name1 = input("What is your name? \n")
+name2 = input("What is their name? \n")
+# 🚨 Don't change the code above 👆
+
+#Write your code below this line 👇
+
+name1 = name1.lower()
+name2 = name2.lower()
+com_name = name1 + name2
+
+true = 0
+love = 0
+
+if 't' in com_name:
+    true += com_name.count('t')
+if 'r' in com_name:
+    true += com_name.count('r')
+if 'u' in com_name:
+    true += com_name.count('u')
+if 'e' in com_name:
+    true += com_name.count('e')
+
+if 'l' in com_name:
+    love += com_name.count('l')
+if 'o' in com_name:
+    love += com_name.count('o')
+if 'v' in com_name:
+    love += com_name.count('v')
+if 'e' in com_name:
+    love += com_name.count('e')
+
+love_score = int(str(true) + str(love))
+
+#print(love_score)
+
+if love_score < 10 or love_score > 90:
+    print(f"Your score is {love_score}, you go together like coke and mentos.")
+elif love_score >= 40 and love_score <= 50:
+    print(f"Your score is {love_score}, you are alright together.")
+else:
+    print(f"Your score is {love_score}.")
+
+
+#t1 = name1.count('t')
+#r1 = name1.count('r')
+#u1 = name1.count('u')
+#e1 = name1.count('e')
+#t2 = name2.count('t')
+#r2 = name2.count('r')
+#u2 = name2.count('u')
+#e2 = name2.count('e')
+#
+#l1 = name1.count('l')
+#o1 = name1.count('o')
+#v1 = name1.count('v')
+#e1 = name1.count('e')
+#l2 = name2.count('l')
+#o2 = name2.count('o')
+#v2 = name2.count('v')
+#e2 = name2.count('e')
+
+
