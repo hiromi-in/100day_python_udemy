@@ -6,7 +6,6 @@ def caesar(start_text, shift_amount, cipher_direction):
     shift_amount *= -1
   for char in start_text:
     if char not in alphabet:
-       char = char
        end_text += char
     else:
        position = alphabet.index(char)
@@ -27,8 +26,7 @@ while game_continue:
   text = input("Type your message:\n").lower()
   shift = int(input("Type the shift number:\n"))
 
-  if shift > 26:
-    shift = shift % 26
+  shift = shift % 26
 
   caesar(start_text=text, shift_amount=shift, cipher_direction=direction)
 
