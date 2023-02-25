@@ -34,7 +34,7 @@ def blackjack():
 
   def one_round():
     your_cards.append(random.choice(cards))
-    computer_cards.append(random.choice(cards)) 
+    computer_cards.append(random.choice(cards))
   
   def final_result():
     print(f"\nYour final hand: {your_cards}, final score: {your_sum}")
@@ -56,11 +56,14 @@ def blackjack():
     elif your_sum < computer_sum:
              final_result()
              print("Opponent is closer to 21. You lose.😭")
-    below21 = False
-    
-  
+   
+
+
+      
+      
+      
   below21 = True
-  play = input('\nDo you want to play a game of Blackjack? Type \'y\' or \'no\': ')
+  play = input('\nDo you want to play a game of Blackjack? Type \'y\' or \'n\': ')
   if play == 'y':
     clear()
     print(logo)
@@ -68,24 +71,45 @@ def blackjack():
     one_round()
     your_sum = sum(your_cards)
     computer_sum = sum(computer_cards)
-    
-    print(f'your cards: {your_cards}, current score: {your_sum}')
-    print(f'Computer\'s first card: {computer_cards[0]}')
-    continue_game = input("Type 'y' to get another card, type 'n' to pass: ")
+
+    if your_sum != 21 and computer_sum != 21:
+      print(f'your cards: {your_cards}, current score: {your_sum}')
+      print(f'Computer\'s first card: {computer_cards[0]}')
+      continue_game = input("Type 'y' to get another card, type 'n' to pass: ")
+    else:
+      continue_game = 'y'
+
   
     while below21:
+      if 10 in your_cards and 11 in your_cards:
+        final_result()
+        print("Win with a blackjack!🤑")
+        break
+      elif 10 in computer_cards and 11 in computer_cards:
+        final_result()
+        print('Lose, computer has blackjack.🫥')
+        break
+        
       if continue_game == 'y':
         if your_sum  > 10:
-          cards.remove(11)
-          cards.append(1)
+          cards[0] = 1
         one_round()
         your_sum = sum(your_cards)
         computer_sum = sum(computer_cards)
       elif continue_game == 'n':
         result()
         break
-      
-      if your_sum <= 21:
+        
+      if 10 in your_cards and 11 in your_cards:
+        final_result()
+        print("Win with a blackjack!🤑")
+        break
+      elif 10 in computer_cards and 11 in computer_cards:
+        final_result()
+        print('Lose, computer has blackjack.🫥')
+        break
+        
+      if your_sum < 21:
         print(f'\nyour cards: {your_cards}, current score: {your_sum}')
         print(f'Computer\'s first card: {computer_cards[0]}')
         continue_game = input("Type 'y' to get another card, type 'n' to pass: ")
