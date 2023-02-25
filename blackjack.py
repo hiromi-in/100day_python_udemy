@@ -57,6 +57,11 @@ def blackjack():
     elif your_sum < computer_sum:
              final_result()
              print("Opponent is closer to 21. You lose.😭")
+
+  def hand():
+    print(f'  your cards: {your_cards}, current score: {your_sum}')
+    print(f'  Computer\'s first card: {computer_cards[0]}')
+    
       
       
   below21 = True
@@ -70,8 +75,7 @@ def blackjack():
     computer_sum = sum(computer_cards)
 
     if your_sum != 21 and computer_sum != 21:
-      print(f'  your cards: {your_cards}, current score: {your_sum}')
-      print(f'  Computer\'s first card: {computer_cards[0]}')
+      hand()
       continue_game = input("Type 'y' to get another card, type 'n' to pass: ")
     else:
       continue_game = 'y'
@@ -107,8 +111,7 @@ def blackjack():
         break
         
       if your_sum < 21:
-        print(f'\n  your cards: {your_cards}, current score: {your_sum}')
-        print(f'  Computer\'s first card: {computer_cards[0]}')
+        hand()
         continue_game = input("Type 'y' to get another card, type 'n' to pass: ")
         if continue_game == 'n':
           result()
