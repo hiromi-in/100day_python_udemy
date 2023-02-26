@@ -12,13 +12,9 @@ import random
 from art import logo
 from replit import clear
 
-number = []
-for i in range(1,101):
-  number.append(i)
-
 def guess_num_game():
   print(logo)
-  picked_num = random.choice(number)
+  picked_num = random.randint(1,100)
   print("Welcome to the Number Guessing Game!\nI\'m thinking of a number between 1 and 100.")
   #print(f"The number is {picked_num}.")
 
