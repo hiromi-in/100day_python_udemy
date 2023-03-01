@@ -49,6 +49,10 @@ while game_continue:
     if input("\nWhould you like to play again? Type 'y' to play again, or 'no' to quit.: ").lower() == 'n':
       print("Have a good day!🤗")
       game_continue = False
+    else:
+      os.system('clear')
+      score = 0
+      print(art.logo)
     
     
 
