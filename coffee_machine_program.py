@@ -1,12 +1,7 @@
 from menu import MENU, resources
 
-water = resources["water"]
-milk = resources["milk"]
-coffee = resources["coffee"]
-
 profit = 0
 total = 0
-
 
 def coins():
     global total
@@ -21,16 +16,25 @@ def coins():
 def resource_match(drink):
     global order_continue
     for i in resources:
+        if i not in MENU[drink]["ingredients"]:
+            MENU[drink]["ingredients"][i] = 0
+    for i in resources:
         if MENU[drink]["ingredients"][i] > resources[i]:
             print(f"Sorry there is not enough {i}.")
             order_continue = False
         else:
             resources[i] -= MENU[drink]["ingredients"][i]
+            #print(resources[i])
 
 
 order_continue = True
 
 while order_continue:
+
+    water = resources["water"]
+    milk = resources["milk"]
+    coffee = resources["coffee"]
+
     order = input("What would you like? (espresso/latte/cappuccino)")
 
     if order == 'report':
@@ -58,42 +62,3 @@ while order_continue:
     if input("Would you like another drink? Type 'y' for yes, 'n' for no.") == 'n':
         print("Have a good day!😄")
         order_continue = False
-
-
-        ----------------------------------------------------------------------
-        menu.py
-        
-        MENU = {
-    "espresso": {
-        "ingredients": {
-            "water": 50,
-            "coffee": 18,
-        },
-        "cost": 1.5,
-    },
-    "latte": {
-        "ingredients": {
-            "water": 200,
-            "milk": 150,
-            "coffee": 24,
-        },
-        "cost": 2.5,
-    },
-    "cappuccino": {
-        "ingredients": {
-            "water": 250,
-            "milk": 100,
-            "coffee": 24,
-        },
-        "cost": 3.0,
-    }
-}
-
-resources = {
-    "water": 300,
-    "milk": 200,
-    "coffee": 100,
-}
-
-
-
