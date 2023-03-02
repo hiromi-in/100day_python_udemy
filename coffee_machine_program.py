@@ -61,7 +61,7 @@ while order_continue:
         elif paid >= cost:
             change = paid - cost
             resource_match(drink = order)
-    elif order = 'off':
+    elif order == 'off':
         print("Turning off. Good bye!")
         order_continue = False
     else:
