@@ -61,6 +61,9 @@ while order_continue:
         elif paid >= cost:
             change = paid - cost
             resource_match(drink = order)
+    elif order = 'off':
+        print("Turning off. Good bye!")
+        order_continue = False
     else:
         print("Wrong order. Good bye!")
         order_continue = False
