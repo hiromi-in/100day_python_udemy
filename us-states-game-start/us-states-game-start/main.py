@@ -16,7 +16,7 @@ turtle.shape(image)
 state_data = pandas.read_csv("50_states.csv")
 state_list = state_data.state.to_list()
 correct_guess = []
-missing_state = []
+#missing_state = []
 
 while len(correct_guess) < 50:
 
@@ -36,9 +36,10 @@ while len(correct_guess) < 50:
             state_turtle.goto(x=state_data.iloc[state_index]["x"], y=state_data.iloc[state_index]["y"])
             state_turtle.write(answer_state)
 
-for checked_state in state_list:
-    if checked_state not in correct_guess:
-        missing_state.append(checked_state)
+#for checked_state in state_list:
+#    if checked_state not in correct_guess:
+#        missing_state.append(checked_state)
+missing_state = [checked_state for checked_state in state_list if checked_state not in correct_guess]
 
 missing_data = pandas.DataFrame(missing_state)
 missing_data.to_csv("missing_states.csv")
