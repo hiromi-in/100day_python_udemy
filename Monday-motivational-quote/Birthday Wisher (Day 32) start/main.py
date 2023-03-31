@@ -1,14 +1,14 @@
 #import smtplib
 #
-#my_email = "i69265264@gmail.com"
-#password = "qrqihghowtminnmn"
+#my_email = "XXXX"
+#password = "XXXX"
 #
 #
 #with smtplib.SMTP("smtp.gmail.com") as connection:
 #    connection.starttls()
 #
 #    connection.login(user=my_email, password=password)
-#    connection.sendmail(from_addr=my_email, to_addrs="hiromi.thomas@yahoo.com",
+#    connection.sendmail(from_addr=my_email, to_addrs="XXXX",
 #                        msg="Subject:Hello\n\nThis is the body of my email.")
 #
 ##
@@ -35,9 +35,9 @@ day_of_week = now.weekday()
 if day_of_week == 3:
 
     with smtplib.SMTP("smtp.gmail.com") as connection:
-        my_email = "i69265264@gmail.com"
-        password = "apvfimpalknkcobu"
+        my_email = "XXXX@gmail.com"
+        password = "XXXX"
         connection.starttls()
         connection.login(user=my_email, password=password)
-        connection.sendmail(from_addr=my_email, to_addrs="hiromi.thomas@yahoo.com",
+        connection.sendmail(from_addr=my_email, to_addrs="XXXX",
                             msg=f"Subject:It's Monday!\n\n{random.choice(quote_list)}")
