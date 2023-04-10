@@ -1,112 +1,55 @@
 #This file will need to use the DataManager,FlightSearch, FlightData, NotificationManager classes to achieve the program requirements.
 
-import requests
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+from notification_manager import NotificationManager
+from data_manager import DataManager
+from flight_data import FlightData
+from flight_search import FlightSearch
 import os
-from twilio.rest import Client
-
-TEQUILA_SEARCH_ENDPOINT = "https://api.tequila.kiwi.com/v2/search"
-TEQUILA_LOCATION_ENDPOINT = "https://api.tequila.kiwi.com/locations/query"
-TEQUILA_API_KEY = os.environ.get('TEQUILA_API_KEY')
-
-SHEETY_TOKEN = os.environ.get('SHEET_TOKEN')
-SHEETY_GET_ENDPOINT = os.environ.get('SHEET_ENDPOINT')
 
 account_sid = os.environ.get('TWILLIO_SID')
 auth_token = os.environ.get('TWILLIO_TOKEN')
+MESSAGE_FROM = os.environ.get('FROM_NUMBER')
+MESSAGE_TO = os.environ.get('TO_NUMBER')
+SHEETY_TOKEN = os.environ.get('SHEET_TOKEN')
+SHEETY_GET_ENDPOINT = os.environ.get('SHEET_ENDPOINT')
+TEQUILA_API_KEY = os.environ.get('TEQUILA_API_KEY')
 
-tequila_header = {
-    "Content-Type" : "application/json",
-    "apikey": TEQUILA_API_KEY,
-}
+data_manager = DataManager(sheet_token=SHEETY_TOKEN, sheet_endpoint=SHEETY_GET_ENDPOINT)
+flight_data = FlightData(apikey=TEQUILA_API_KEY)
+flight_search = FlightSearch(apikey=TEQUILA_API_KEY)
 
-sheety_headers = {
-    "Authorization" : SHEETY_TOKEN,
-    "Content-Type": "application/json",
-}
+original_fly_from = "LCY"
 
-#------------Get IATA Code------------------------#
-
-city_cost_dict = {}
-get_row_num = requests.get(url=SHEETY_GET_ENDPOINT, headers=sheety_headers)
-get_row_num = get_row_num.json()
-
-for i in range(len(get_row_num["prices"])):
-    row_id = get_row_num["prices"][i-1]["id"]
-
-    tequila_location_params = {
-        "term": get_row_num["prices"][i-1]["city"],
-        "location_types": "city",
-        "active_only": "true",
-    }
-
-    tequila_response = requests.get(url=TEQUILA_LOCATION_ENDPOINT, params=tequila_location_params, headers=tequila_header)
-    city_code = tequila_response.json()["locations"][0]["code"]
-
-    sheety_add = {
-        'price' : {
-            'city': get_row_num["prices"][i-1]["city"],
-            'iataCode': city_code,
-            'lowestPrice': get_row_num["prices"][i-1]['lowestPrice'],
-            'id': get_row_num["prices"][i-1]["id"],
-        }
-    }
-
-    city_cost_dict[city_code] = get_row_num["prices"][i - 1]['lowestPrice']
-
-    response = requests.put(url=f"https://api.sheety.co/939d5b2d5afe69747a7b20323f2fd8ed/flightDeals/prices/{row_id}", json=sheety_add, headers=sheety_headers)
-
-#----------------Search flights---------------#
+for i in range(len(data_manager.all_data)):
+    city_name = data_manager.get_city_name(row_num=i)
+    if data_manager.all_data[i-1]["iataCode"] == '':
+        city_code = flight_data.get_city_code(city_name=city_name)
+        data_manager.add_city_code(city_name=city_name, row_num=i, city_code=city_code)
 
 today = datetime.now().strftime("%d/%m/%Y")
 today_plus_five_days = (datetime.today() + relativedelta(days=+5)).strftime("%d/%m/%Y")
 six_months_ahead = (datetime.today() + relativedelta(months=+6)).strftime("%d/%m/%Y")
 six_months_plus_five_days = (datetime.today() + relativedelta(months=+6, days=+5)).strftime("%d/%m/%Y")
 
-for city in city_cost_dict:
+city_cost_list={}
+for i in range(len(data_manager.all_data)):
+    city_cost_list[data_manager.all_data[i-1]["iataCode"]] = data_manager.all_data[i-1]["lowestPrice"]
 
-    tequila_flight_search_params = {
-        "fly_from": "LCY",
-        "fly_to": city,
-        "date_from": today,
-        "date_to": six_months_ahead,
-        "return_from": today_plus_five_days,
-        "return_to": six_months_plus_five_days,
-        "flight_type": "round",
-        "adults": 2,
-        "infants": 2,
-        "only_working_days": False,
-        "only_weekends": False,
-        "partner_market": "us",
-        "max_stopovers": 2,
-        "max_sector_stopovers": 2,
-        "vehicle_type": "aircraft",
-        "limit" : 5
-    }
-
-    response = requests.get(url=TEQUILA_SEARCH_ENDPOINT, headers=tequila_header, params=tequila_flight_search_params)
-    data = response.json()
-    cheapest = city_cost_dict[city]
-    from_airport = ""
-    to_airport = ""
-    date_from = ""
-    date_to = ""
+for city in city_cost_list:
+    search_data = flight_search.search_flight(fly_from=original_fly_from,fly_to=city, date_from=today, date_to=six_months_ahead,
+                                       return_from=today_plus_five_days, return_to=six_months_plus_five_days)["data"]
     cheaper_flight = False
-    for i in range(len(data["data"])):
-        if data["data"][i-1]["price"] < cheapest:
-           cheapest = data["data"][i-1]["price"]
-           from_airport = f'{data["data"][i-1]["cityFrom"]}-{data["data"][i-1]["cityCodeFrom"]}'
-           to_airport = f'{data["data"][i-1]["cityTo"]}-{data["data"][i-1]["cityCodeTo"]}'
-           date_from = data["data"][i-1]["route"][0]["local_departure"].split("T")[0]
-           date_to = data["data"][i-1]["route"][-1]["local_departure"].split("T")[0]
-           cheaper_flight = True
+    cheapest = city_cost_list[city]
+
+    for i in range(len(search_data)):
+       flight_data.modify_data(row_num=i-1, search_data=search_data, cheapest=cheapest)
+       cheaper_flight = True
+
     if cheaper_flight == True:
-        client = Client(account_sid, auth_token)
-        message = client.messages.create(
-            body=f"Low price alert! Only ${cheapest} to fly from {from_airport} to {to_airport}, from {date_from} to {date_to}.",
-            from_=os.environ.get('FROM_NUMBER'),
-            to=os.environ.get('TO_NUMBER')
-        )
-        print(message.sid)
+        notification = NotificationManager(sid=account_sid, token=auth_token, message_to=MESSAGE_TO, message_from=MESSAGE_FROM)
+        notification.send_message(cheapest=flight_data.cheapest, from_airport=flight_data.from_airport,
+                                  to_airport=flight_data.to_airport, date_from=flight_data.date_from,
+                                  date_to=flight_data.date_to)
 
